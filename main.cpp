@@ -6,67 +6,7 @@
 #include "util.h"
 
 using namespace std;
-using namespace sol1181;
-
-/*
-Input: phrases = ["writing code","code rocks"]
-Output: ["writing code rocks"]
-*/
-tuple<vector<string>, vector<string>>
-testFixture1()
-{
-  auto phrases = vector<string>{"writing code", "code rocks"};
-  auto output = vector<string>{"writing code rocks"};
-  return make_tuple(phrases, output);
-}
-
-/*
-Input: phrases = ["mission statement",
-                  "a quick bite to eat",
-                  "a chip off the old block",
-                  "chocolate bar",
-                  "mission impossible",
-                  "a man on a mission",
-                  "block party",
-                  "eat my words",
-                  "bar of soap"]
-Output: ["a chip off the old block party",
-         "a man on a mission impossible",
-         "a man on a mission statement",
-         "a quick bite to eat my words",
-         "chocolate bar of soap"]
-*/
-tuple<vector<string>, vector<string>>
-testFixture2()
-{
-  auto phrases = vector<string>{"mission statement",
-                                "a quick bite to eat",
-                                "a chip off the old block",
-                                "chocolate bar",
-                                "mission impossible",
-                                "a man on a mission",
-                                "block party",
-                                "eat my words",
-                                "bar of soap"};
-  auto output = vector<string>{"a chip off the old block party",
-                               "a man on a mission impossible",
-                               "a man on a mission statement",
-                               "a quick bite to eat my words",
-                               "chocolate bar of soap"};
-  return make_tuple(phrases, output);
-}
-
-/*
-Input: phrases = ["a","b","a"]
-Output: ["a"]
-*/
-tuple<vector<string>, vector<string>>
-testFixture3()
-{
-  auto phrases = vector<string>{"a", "b", "a"};
-  auto output = vector<string>{"a"};
-  return make_tuple(phrases, output);
-}
+using namespace sol1244;
 
 string toString(vector<string> input)
 {
@@ -85,51 +25,23 @@ string toString(vector<string> input)
 
 void test1()
 {
-  auto f = testFixture1();
-
-  cout << "Test 1 - expect to see: " << toString(get<1>(f)) << endl;
-
-  Solution sol;
-  auto result = sol.create(get<0>(f));
-  cout << "result: " << toString(result) << endl;
-}
-
-void test2()
-{
-  auto f = testFixture2();
-
-  cout << "Test 2 - expect to see: " << toString(get<1>(f)) << endl;
-
-  Solution sol;
-  auto result = sol.create(get<0>(f));
-  cout << "result: " << toString(result) << endl;
-}
-
-void test3()
-{
-  auto f = testFixture3();
-
-  cout << "Test 3 - expect to see: " << toString(get<1>(f)) << endl;
-
-  Solution sol;
-  auto result = sol.create(get<0>(f));
-  cout << "result: " << toString(result) << endl;
-}
-
-void testSplit()
-{
-  auto f = testFixture2();
-  auto input = get<1>(f)[0];
-  auto del = ' ';
-  auto result = Util::split(input, &del);
+  Leaderboard leaderboard;
+  leaderboard.addScore(1, 73);      // leaderboard = [[1,73]];
+  leaderboard.addScore(2, 56);      // leaderboard = [[1,73],[2,56]];
+  leaderboard.addScore(3, 39);      // leaderboard = [[1,73],[2,56],[3,39]];
+  leaderboard.addScore(4, 51);      // leaderboard = [[1,73],[2,56],[3,39],[4,51]];
+  leaderboard.addScore(5, 4);       // leaderboard = [[1,73],[2,56],[3,39],[4,51],[5,4]];
+  auto result = leaderboard.top(1); // returns 73;
+  cout << "Expect to see 73 - result: " << to_string(result) << endl;
+  leaderboard.reset(1);        // leaderboard = [[2,56],[3,39],[4,51],[5,4]];
+  leaderboard.reset(2);        // leaderboard = [[3,39],[4,51],[5,4]];
+  leaderboard.addScore(2, 51); // leaderboard = [[2,51],[3,39],[4,51],[5,4]];
+  result = leaderboard.top(3); // returns 141 = 51 + 51 + 39;
+  cout << "Expect to see 141 - result: " << to_string(result) << endl;
 }
 
 main()
 {
   test1();
-  test2();
-  test3();
-  // testSplit();
-
   return 0;
 }

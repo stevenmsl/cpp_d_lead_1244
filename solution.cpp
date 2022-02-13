@@ -1,57 +1,48 @@
 #include "solution.h"
 #include "util.h"
 #include <unordered_map>
-#include <set>
-#include <map>
-#include <cstdlib>
-using namespace sol1181;
+#include <numeric>
+#include <algorithm>
+using namespace sol1244;
 using namespace std;
 
-/*
-  - build a map of first-last words pair for
-    each phrase so later we can have easier
-    comparisons among phrases
-  - use a set to make sure the puzzles
-    are sorted
+/*takeaways
+  - use an unordered_map to keep the scores and
+    to check if a player has been added
+  - use a vector to keep a list of players
+  - use "nth_element" to sort the players
+    in descending order by their score
+  - use "accumulate" to total up the scores
+    from player 0 to player k-1
 */
 
-vector<string> Solution::create(vector<string> &phrases)
+void Leaderboard::addScore(int id, int score)
 {
-  const auto n = phrases.size();
-  /* first-last words pair */
-  auto flPairs = unordered_map<int, pair<string, string>>();
-  auto del = ' ';
-  for (auto i = 0; i < n; i++)
-  {
-    auto words = Util::split(phrases[i], &del);
-    auto pair = make_pair(
-        *words.begin(),
-        *(words.end() - 1));
-    flPairs[i] = pair;
-  }
+  if (!scores.count(id))
+    players.push_back(id);
+  scores[id] += score;
+}
 
-  /* make sure the puzzles are sorted lexicographically */
-  auto ordered = set<string>();
+int Leaderboard::top(int k)
+{
+  /*
+    - sort the players by their score - up to k-1
+      - players.begin() + k is not included
+      - use custom compare so the sorting is
+        based on their scores
+  */
+  nth_element(players.begin(), players.begin() + k, players.end(), [&](int p1, int p2)
+              { return scores[p1] > scores[p2]; });
 
-  /* walk through all the possible pairs */
-  for (auto i = 0; i < n; i++)
-  {
-    auto phrase = phrases[i];
-    auto lastWord = flPairs[i].second;
-    for (auto p : flPairs)
-    {
-      auto j = p.first;
-      auto firstWord = p.second.first;
-      if (i == j || lastWord != firstWord)
-        continue;
-      /* remove the last word */
-      phrase.resize(phrase.size() - lastWord.size());
-      /* compose the before and after puzzle  */
-      phrase += phrases[j];
-      /* make sure puzzles are distinct */
-      if (ordered.count(phrase) <= 0)
-        ordered.insert(phrase);
-    }
-  }
-  return vector<string>(ordered.begin(), ordered.end());
+  /*
+    - once the players are sorted total up their scores
+  */
+  auto total = accumulate(players.begin(), players.begin() + k, 0, [&](int sum, int p)
+                          { return sum + scores[p]; });
+
+  return total;
+}
+void Leaderboard::reset(int id)
+{
+  scores[id] = 0;
 }

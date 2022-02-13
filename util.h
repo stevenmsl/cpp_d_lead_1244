@@ -6,12 +6,8 @@
 #include <set>
 #include <string>
 using namespace std;
-namespace sol1181
+namespace sol1244
 {
-    class Util
-    {
-    public:
-        static vector<string> split(string input, const char *delimiter);
-    };
+
 }
 #endif
